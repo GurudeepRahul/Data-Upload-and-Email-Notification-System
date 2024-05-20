@@ -8,7 +8,6 @@ const { createObjectCsvWriter } = require('csv-writer');
 const initializeUserModel = require('../models/userModel');
 
 exports.addUsers = async (req, res) => {
-    // Ensure the database connection is established
     await mongoose.connection;
 
     if (!req.file) {
@@ -24,12 +23,11 @@ exports.addUsers = async (req, res) => {
     }
 
     const filePath = path.join(__dirname, '../uploads', req.file.filename);
-
     try {
         const headers = await getCsvHeaders(filePath);
-        await initializeUserModel(headers); // Create or update the schema dynamically
+        await initializeUserModel(headers); 
 
-        const User = mongoose.model('User'); // Ensure to get the model after initialization
+        const User = mongoose.model('User'); 
         const existingEmails = await fetchExistingEmails(User);
         const customProperties = JSON.parse(req.body.customProperties || "{}");
 
@@ -74,6 +72,8 @@ const getCsvHeaders = (filePath) => {
             .pipe(csv())
             .on('headers', (csvHeaders) => {
                 csvHeaders.forEach(header => headers[header] = { type: String });
+                headers['isActive'] = { type: Boolean };
+                headers['userId'] = { type: Number };
                 resolve(headers);
             })
             .on('error', (error) => reject(error));
@@ -137,7 +137,6 @@ const parseCsv = (filePath, existingEmails, customProperties) => {
     });
 };
 
-// Ensure the Counter model is defined only once
 let Counter;
 if (!mongoose.models.Counter) {
     const counterSchema = new mongoose.Schema({
@@ -168,6 +167,13 @@ const addUsersWithAutoIncrementId = async (users, User) => {
 
 const generateCsv = (users, headers, csvFilePath) => {
     return new Promise((resolve, reject) => {
+        if (!headers['isActive']) {
+            headers['isActive'] = { type: Boolean };
+        }
+        if (!headers['userId']) {
+            headers['userId'] = { type: Number };
+        }
+
         const csvWriter = createObjectCsvWriter({
             path: csvFilePath,
             header: Object.keys(headers).map(header => ({ id: header, title: header }))
@@ -241,9 +247,8 @@ exports.sendEmail = async (req, res) => {
 exports.unsubscribeUser = async (req, res) => {
     const userId = req.query.userId;
     try {
-        await connectionPool; // Ensure the database connection is established
+        await connectionPool; 
 
-        // Initialize the User model dynamically if not already defined
         if (!mongoose.models.User) {
             await initializeUserModel();
         }
