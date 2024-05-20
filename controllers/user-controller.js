@@ -59,7 +59,7 @@ exports.addUsers = async (req, res) => {
             }
         });
     } catch (error) {
-        console.error("An error occurred", error);
+        console.log("An error occurred", error);
         res.status(500).json({
             message: "An error occurred",
             error: error.message
@@ -233,6 +233,7 @@ exports.sendEmail = async (req, res) => {
         });
 
     } catch (error) {
+        console.log(error);
         return res.status(500).json({ message: error.message });
     }
 };
@@ -269,6 +270,7 @@ exports.unsubscribeUser = async (req, res) => {
             message: 'User unsubscribed successfully' 
         });
     } catch (error) {
+        console.log(error)
         return res.status(500).json({ 
             message: error.message 
         });
