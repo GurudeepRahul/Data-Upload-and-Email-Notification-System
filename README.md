@@ -33,6 +33,7 @@ Three routes have been implemented
   * This route will have two query params, `startUserId and lastUserId`. These will be the startUserId and the lastUserId of the users to send the emails.
   * Then, we will query the user from the database and insert those attribute values into the HTML and text fields to send an email and unsubscribe link.
   * Mails will only be sent to the users who have not unsubscribed.
+  * we made use of nodemailer to send mails to the users. 
 
 **Reference Image:**
 ![image](https://github.com/GurudeepRahul/MathonGo_InternshipProject/assets/87088087/9b03b117-cc69-4ca5-8558-ac51d40dda41)
