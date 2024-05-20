@@ -215,8 +215,8 @@ exports.sendEmail = async (req, res) => {
                     from: process.env.EMAIL_ID,
                     to: user.email,
                     subject: `Hi ${user.name} from Team MathonGo`,
-                    text: `Hey ${user.name}!\n\nThank you for signing up with your email ${user.email}.\n\nTeam MathonGo.\n\nTo unsubscribe, please click this link: http://localhost:3000/admin/unsubscribe-user?userId=${user.userId}`,
-                    html: `<p>Hey ${user.name}!</p><p>Thank you for signing up with your email ${user.email}.</p><p>Team MathonGo.</p><p>To unsubscribe, please click this link: <a href="http://localhost:3000/admin/unsubscribe-user?userId=${user.userId}">Unsubscribe</a></p>`
+                    text: `Hey ${user.name}!\n\nThank you for signing up with your email ${user.email}.\n\nTeam MathonGo.\n\nTo unsubscribe, please click this link: https://mathon-go-internship-project-typf.vercel.app/admin/unsubscribe-user?userId=${user.userId}`,
+                    html: `<p>Hey ${user.name}!</p><p>Thank you for signing up with your email ${user.email}.</p><p>Team MathonGo.</p><p>To unsubscribe, please click this link: <a href="https://mathon-go-internship-project-typf.vercel.app/admin/unsubscribe-user?userId=${user.userId}">Unsubscribe</a></p>`
                 };
 
                 try {
