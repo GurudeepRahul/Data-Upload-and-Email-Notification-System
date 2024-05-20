@@ -15,4 +15,5 @@ module.exports = (router) => {
     router.post("/admin/add-users", upload.single('file'), users.addUsers);
     router.post("/admin/send-email", users.sendEmail);
     router.post("/admin/unsubscribe-user", users.unsubscribeUser);
+    router.get("/admin", users.checksite);
 }

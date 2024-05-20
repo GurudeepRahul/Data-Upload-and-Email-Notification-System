@@ -274,3 +274,9 @@ exports.unsubscribeUser = async (req, res) => {
         });
     }
 }
+
+exports.checksite = async (req, res) => {
+    return res.status(200).json({
+        msg: "Successful deployment"
+    })
+}
