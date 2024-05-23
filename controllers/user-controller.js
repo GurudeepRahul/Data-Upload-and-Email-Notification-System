@@ -25,37 +25,37 @@ exports.addUsers = async (req, res) => {
     const filePath = path.join(__dirname, '../uploads', req.file.filename);
     try {
         const headers = await getCsvHeaders(filePath);
-        await initializeUserModel(headers); 
+        await initializeUserModel(headers);
 
-        const User = mongoose.model('User'); 
+        const User = mongoose.model('User');
         const existingEmails = await fetchExistingEmails(User);
         const customProperties = JSON.parse(req.body.customProperties || "{}");
 
         const { users, notAddedUsersCount, addedUsersCount, errors } = await parseCsv(filePath, existingEmails, customProperties);
         await addUsersWithAutoIncrementId(users, User);
 
-        const csvFilePath = path.join(__dirname, '../uploads', 'users-output.csv');
+        const csvFilePath = path.join(__dirname, '../uploads', 'all-users.csv');
         await generateCsv(users, headers, csvFilePath);
 
         const totalUsersCount = await User.countDocuments();
         if (errors.length > 0) {
+            const allUsers = await User.find().lean();
+
+            await generateCsv(allUsers, headers, csvFilePath);
+
             return res.status(400).json({
                 addedUsersCount: parseInt(addedUsersCount),
                 notAddedUsersCount: parseInt(notAddedUsersCount),
                 totalUsersCount: parseInt(totalUsersCount),
                 errors: errors,
-                csvFilePath: csvFilePath
+                fileNameForDownload: `all-users-csv`  
+            });
+        } else {
+            return res.status(200).json({
+                message: 'Users added successfully',
+                fileNameForDownload: `all-users-csv`  
             });
         }
-        return res.status(200).download(csvFilePath, 'users-output.csv', (err) => {
-            if (err) {
-                console.error('Error sending the CSV file', err);
-                res.status(500).json({
-                    message: "An error occurred while sending the CSV file",
-                    error: err.message
-                });
-            }
-        });
     } catch (error) {
         console.log("An error occurred", error);
         res.status(500).json({
@@ -165,7 +165,7 @@ const addUsersWithAutoIncrementId = async (users, User) => {
     await User.insertMany(users);
 };
 
-const generateCsv = (users, headers, csvFilePath) => {
+const generateCsv = (data, headers, csvFilePath) => {
     return new Promise((resolve, reject) => {
         if (!headers['isActive']) {
             headers['isActive'] = { type: Boolean };
@@ -179,9 +179,24 @@ const generateCsv = (users, headers, csvFilePath) => {
             header: Object.keys(headers).map(header => ({ id: header, title: header }))
         });
 
-        csvWriter.writeRecords(users)
+        csvWriter.writeRecords(data)
             .then(() => resolve())
             .catch(error => reject(error));
+    });
+};
+
+exports.downloadFile = (req, res) => {
+    const fileType = req.params.fileType;
+    const filePath = path.join(__dirname, `../uploads/${fileType}.csv`);
+
+    res.download(filePath, `${fileType}.csv`, (err) => {
+        if (err) {
+            console.error('Error sending the CSV file', err);
+            return res.status(500).json({
+                message: "An error occurred while sending the CSV file",
+                error: err.message
+            });
+        }
     });
 };
 
