@@ -48,12 +48,12 @@ exports.addUsers = async (req, res) => {
                 notAddedUsersCount: parseInt(notAddedUsersCount),
                 totalUsersCount: parseInt(totalUsersCount),
                 errors: errors,
-                fileNameForDownload: `all-users-csv`  
+                fileNameForDownloadLink: `Please Click on this link for Download https://mathongo-internshipproject.onrender.com/download/all-users-csv`  
             });
         } else {
             return res.status(200).json({
                 message: 'Users added successfully',
-                fileNameForDownload: `all-users-csv`  
+                fileNameForDownloadLink: `Please Click on this link for Download https://mathongo-internshipproject.onrender.com/download/all-users-csv`  
             });
         }
     } catch (error) {
